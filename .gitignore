@@ -1,0 +1,10 @@
+﻿bin/
+obj/
+
+*.log
+logs/
+
+.vscode/
+
+packages/
+node_modules/
