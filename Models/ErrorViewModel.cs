@@ -1,8 +1,9 @@
-namespace Mission08_Team0414.Models;
-
-public class ErrorViewModel
+namespace Mission08_Team0414.Models
 {
-    public string? RequestId { get; set; }
+    public class ErrorViewModel
+    {
+        public string? RequestId { get; set; }
 
-    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    }
 }
