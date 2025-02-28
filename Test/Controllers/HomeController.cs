@@ -7,11 +7,11 @@ namespace Test.Controllers;
 
 public class HomeController : Controller
 {
-    private ToDoListContext _context;
+    private ITaskRepository _repo;
 
-    public HomeController(ToDoListContext temp)
+    public HomeController(ITaskRepository temp)
     {
-        _context = temp;
+        _repo = temp;
     }
 
     public IActionResult Index()
@@ -22,7 +22,7 @@ public class HomeController : Controller
 
     public IActionResult ToDoList()
     {
-        var toDos = _context.ToDos.ToList();
+        var toDos = _repo.GetAllToDos();
         return View(toDos);
     }
 
@@ -34,31 +34,31 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult AddEdit(int? id)
     {
-        // Check if an id is passed
-        ToDo task = id.HasValue 
-            ? _context.ToDos.FirstOrDefault(t => t.TaskId == id) 
-            : new ToDo 
+        // Fetch the task from the database if id is provided, else create a new one
+        ToDo task = id.HasValue
+            ? _repo.GetToDoById(id)//_context.ToDos.FirstOrDefault(t => t.TaskId == id)
+            : new ToDo
             {
                 DueDate = DateTime.Now.AddDays(7).ToString(),
-                Quadrant = 2,
-                Category = "Home",
+                Quadrant = 1,
+                CategoryId = _repo.GetCategoryById(1)?.id ?? 0,
                 Completed = false
             };
 
-        // If no task found, return NotFound (or handle as needed)
+        // If no task is found and id was provided, return NotFound
         if (task == null)
         {
             return NotFound();
         }
 
-        // Pass data to view
-        ViewBag.Categories = new List<SelectListItem>
-        {
-            new SelectListItem { Value = "Home", Text = "Home" },
-            new SelectListItem { Value = "School", Text = "School" },
-            new SelectListItem { Value = "Work", Text = "Work" },
-            new SelectListItem { Value = "Church", Text = "Church" }
-        };
+        // Fetch categories dynamically from the database
+        ViewBag.Categories = _repo.GetAllCategories()//_context.Categories
+            .Select(c => new SelectListItem
+            {
+                Value = c.id.ToString(),
+                Text = c.name
+            })
+            .ToList();
 
         return View(task);
     }
@@ -70,37 +70,31 @@ public class HomeController : Controller
         {
             if (task.TaskId == 0) // New Task
             {
-                _context.ToDos.Add(task);
+                _repo.AddToDo(task);
             }
-            else // Editing Existing Task
+            else // Updating Existing Task
             {
-                var existingTask = _context.ToDos.FirstOrDefault(t => t.TaskId == task.TaskId);
+                var existingTask = _repo.GetToDoById(task.TaskId); 
+
                 if (existingTask != null)
                 {
-                    existingTask.TaskName = task.TaskName;
-                    existingTask.DueDate = task.DueDate;
-                    existingTask.Quadrant = task.Quadrant;
-                    existingTask.Category = task.Category;
-                    existingTask.Completed = task.Completed;
+                    _repo.UpdateTodo(task); // Make sure UpdateTodo() is fixed
                 }
             }
 
-            _context.SaveChanges(); // Save changes to the database
-            return RedirectToAction("ToDoList"); // Redirect after saving
+            return RedirectToAction("ToDoList");
         }
 
-        // If validation fails, return to form with the same task
         return View("AddEdit", task);
     }
     
     [HttpPost]
     public IActionResult Delete(int id)
     {
-        var task = _context.ToDos.FirstOrDefault(t => t.TaskId == id);
+        var task = _repo.GetToDoById(id);
         if (task != null)
         {
-            _context.ToDos.Remove(task);
-            _context.SaveChanges();
+            _repo.DeleteTodo(id);
         }
 
         return RedirectToAction("Index");  // Or any action to go back to the task list

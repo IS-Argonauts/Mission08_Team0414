@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Test.Models;
 
@@ -10,6 +11,7 @@ public class ToDo
     public string TaskName { get; set; }
     public string DueDate { get; set; }
     public int Quadrant { get; set; }
-    public string Category { get; set; }
+    [ForeignKey("CategoryId")]
+    public int CategoryId { get; set; }
     public bool Completed { get; set; }
 }

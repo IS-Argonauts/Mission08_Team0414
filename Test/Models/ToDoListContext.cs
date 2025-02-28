@@ -9,4 +9,5 @@ public class ToDoListContext : DbContext
     }
     
     public DbSet<ToDo> ToDos { get; set; }
+    public DbSet<Category> Categories { get; set; }
 }
