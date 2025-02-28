@@ -1,37 +1,58 @@
 ﻿@model List<ToDo>
 
-@{
-    Layout = null;
-}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do Matrix</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: center;
+        html, body {
+            overflow-y: auto; /* Adds scrolling when needed */
+
         }
-        th, td {
-            border: 1px solid black;
-            padding: 15px;
-            vertical-align: top;
+
+        .quadrants-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Reduce gap between rows */
+            height: 100vh;
+            max-height: 80vh; /* Prevents it from filling the entire screen */
+            overflow-y: auto; /* Adds scrolling when needed */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            width: 100%; /* Ensure full width */
         }
-        th {
-            background-color: #f4f4f4;
+
+        .quadrant-row {
+            display: flex;
+            flex: 1; /* Each row takes equal height dynamically */
+            gap: 10px;
         }
+        .header-row {
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Align text vertically */
+            height: 50px; /* Set a fixed height */
+            gap: 2px;
+        }
+
         .quadrant {
-            min-height: 100px;
+            flex: 1; /* Allows each quadrant to take equal width */
+            border: 1px solid #ddd;
+            padding: 20px;
+            background-color: #f8f9fa;
+            min-height: 100px; /* Allow quadrants to grow */
+            display: flex;
+            flex-direction: column;
+            justify-content: start; /* Align items to the top */
         }
+
         .task {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
         .buttons {
             display: flex;
@@ -54,82 +75,92 @@
     </style>
 </head>
 <body>
+<div class="container">
+    <h1 class="text-center my-4">Eisenhower Matrix</h1>
 
-<h2>Eisenhower Matrix</h2>
+    <div class="quadrants-container">
+        <div class="header-row">
+            <div></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-6"><h2>Urgent</h2></div>
+            <div class="col-md-3"><h2>Non-Urgent</h2></div>
+            <div class="col-md-2"></div>
+        </div>
 
-<table>
-    <tr>
-        <th></th> <!-- Empty top-left corner -->
-        <th>Important</th>
-        <th>Not Important</th>
-    </tr>
-    <tr>
-        <th>Urgent</th>
-        <td class="quadrant">
-            @foreach (var t in Model.Where(t => t.Quadrant == 1))
-            {
-                <div class="task">
-                    <span>@t.TaskName</span>
-                    <div class="buttons">
-                        <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
-                        <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
-                            <input type="hidden" name="id" value="@t.TaskId" />
-                            <button type="submit" class="btn btn-delete">Delete</button>
-                        </form>
+        <div class="quadrant-row">
+            <div class="header" style="writing-mode: vertical-rl; transform: rotate(180deg);"><h2>Important</h2></div>
+            <div class="quadrant">
+                <h4>Quadrant I</h4>
+                @foreach (var t in Model.Where(t => t.Quadrant == 1 && !t.Completed))
+                {
+                    <div class="task">
+                        <span>@t.TaskName</span>
+                        <div class="buttons">
+                            <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
+                            <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
+                                <input type="hidden" name="id" value="@t.TaskId" />
+                                <button type="submit" class="btn btn-delete">Delete</button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            }
-        </td>
-        <td class="quadrant">
-            @foreach (var t in Model.Where(t => t.Quadrant == 3))
-            {
-                <div class="task">
-                    <span>@t.TaskName</span>
-                    <div class="buttons">
-                        <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
-                        <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
-                            <input type="hidden" name="id" value="@t.TaskId" />
-                            <button type="submit" class="btn btn-delete">Delete</button>
-                        </form>
+                }
+            </div>
+            <div class="quadrant">
+                <h4>Quadrant II</h4>
+                @foreach (var t in Model.Where(t => t.Quadrant == 2 && !t.Completed))
+                {
+                    <div class="task">
+                        <span>@t.TaskName</span>
+                        <div class="buttons">
+                            <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
+                            <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
+                                <input type="hidden" name="id" value="@t.TaskId" />
+                                <button type="submit" class="btn btn-delete">Delete</button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            }
-        </td>
-    </tr>
-    <tr>
-        <th>Not Urgent</th>
-        <td class="quadrant">
-            @foreach (var t in Model.Where(t => t.Quadrant == 2))
-            {
-                <div class="task">
-                    <span>@t.TaskName</span>
-                    <div class="buttons">
-                        <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
-                        <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
-                            <input type="hidden" name="id" value="@t.TaskId" />
-                            <button type="submit" class="btn btn-delete">Delete</button>
-                        </form>
+                }
+            </div>
+        </div>
+
+        <div class="quadrant-row">
+            <div class="header" style="writing-mode: vertical-rl; transform: rotate(180deg);"><h2>Not Important</h2></div>
+            <div class="quadrant">
+                <h4>Quadrant III</h4>
+                @foreach (var t in Model.Where(t => t.Quadrant == 3 && !t.Completed))
+                {
+                    <div class="task">
+                        <span>@t.TaskName</span>
+                        <div class="buttons">
+                            <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
+                            <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
+                                <input type="hidden" name="id" value="@t.TaskId" />
+                                <button type="submit" class="btn btn-delete">Delete</button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            }
-        </td>
-        <td class="quadrant">
-            @foreach (var t in Model.Where(t => t.Quadrant == 4))
-            {
-                <div class="task">
-                    <span>@t.TaskName</span>
-                    <div class="buttons">
-                        <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
-                        <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
-                            <input type="hidden" name="id" value="@t.TaskId" />
-                            <button type="submit" class="btn btn-delete">Delete</button>
-                        </form>
+                }
+            </div>
+            <div class="quadrant">
+                <h4>Quadrant IV</h4>
+                @foreach (var t in Model.Where(t => t.Quadrant == 4 && !t.Completed))
+                {
+                    <div class="task">
+                        <span>@t.TaskName</span>
+                        <div class="buttons">
+                            <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
+                            <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
+                                <input type="hidden" name="id" value="@t.TaskId" />
+                                <button type="submit" class="btn btn-delete">Delete</button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            }
-        </td>
-    </tr>
-</table>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
 
 </body>
 </html>

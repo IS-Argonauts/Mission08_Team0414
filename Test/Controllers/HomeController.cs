@@ -26,7 +26,7 @@ public class HomeController : Controller
         return View(toDos);
     }
 
-    public IActionResult Privacy()
+    public IActionResult AddEdit()
     {
         return View();
     }
