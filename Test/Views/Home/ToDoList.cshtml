@@ -1,0 +1,135 @@
+﻿@model List<ToDo>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do Matrix</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 15px;
+            vertical-align: top;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .quadrant {
+            min-height: 100px;
+        }
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .btn {
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-edit {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Eisenhower Matrix</h2>
+
+<table>
+    <tr>
+        <th></th> <!-- Empty top-left corner -->
+        <th>Important</th>
+        <th>Not Important</th>
+    </tr>
+    <tr>
+        <th>Urgent</th>
+        <td class="quadrant">
+            @foreach (var t in Model.Where(t => t.Quadrant == 1))
+            {
+                <div class="task">
+                    <span>@t.TaskName</span>
+                    <div class="buttons">
+                        <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
+                        <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
+                            <input type="hidden" name="id" value="@t.TaskId" />
+                            <button type="submit" class="btn btn-delete">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </td>
+        <td class="quadrant">
+            @foreach (var t in Model.Where(t => t.Quadrant == 3))
+            {
+                <div class="task">
+                    <span>@t.TaskName</span>
+                    <div class="buttons">
+                        <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
+                        <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
+                            <input type="hidden" name="id" value="@t.TaskId" />
+                            <button type="submit" class="btn btn-delete">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </td>
+    </tr>
+    <tr>
+        <th>Not Urgent</th>
+        <td class="quadrant">
+            @foreach (var t in Model.Where(t => t.Quadrant == 2))
+            {
+                <div class="task">
+                    <span>@t.TaskName</span>
+                    <div class="buttons">
+                        <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
+                        <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
+                            <input type="hidden" name="id" value="@t.TaskId" />
+                            <button type="submit" class="btn btn-delete">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </td>
+        <td class="quadrant">
+            @foreach (var t in Model.Where(t => t.Quadrant == 4))
+            {
+                <div class="task">
+                    <span>@t.TaskName</span>
+                    <div class="buttons">
+                        <a asp-action="AddEdit" asp-controller="Home" asp-route-id="@t.TaskId" class="btn btn-edit">Edit</a>
+                        <form asp-action="Delete" asp-controller="Home" method="post" onsubmit="return confirm('Are you sure?');">
+                            <input type="hidden" name="id" value="@t.TaskId" />
+                            <button type="submit" class="btn btn-delete">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
